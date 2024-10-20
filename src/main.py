@@ -19,10 +19,13 @@ logger = logging.getLogger(__name__)
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
-
+origins = [
+    "http://localhost:3000",   # If running locally
+    "https://lobby-fe.vercel.app",  # Your Vercel deployment domain
+]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Add your frontend URL
+    allow_origins=origins,  # Add your frontend URL
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

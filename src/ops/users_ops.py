@@ -53,11 +53,24 @@ def join_lobby(user_id: str, lobby_id: str, db: Session = Depends(get_db)):
     if db_lobby is None:
         raise HTTPException(status_code=400, detail="Unable to join lobby")
     return db_lobby
-
 @router.put("/users/{user_id}/queue_status", response_model=schema.User)
-def set_queue_status(user_id: str, active: bool, db: Session = Depends(get_db)):
+def set_queue_status(user_id: str, body: dict, db: Session = Depends(get_db)):
+    active = body.get('active')
+    if active is None:
+        raise HTTPException(status_code=400, detail="'active' field is required in the request body")
     db_user = users_crud.set_queue_status(db, user_id=user_id, active=active)
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")
     return db_user
 
+@router.get("/users/{user_id}/lobbies", response_model=List[schema.Lobby])
+def get_user_lobbies(user_id: str, db: Session = Depends(get_db)):
+    """
+    Retrieve all lobbies associated with a user.
+    """
+    db_user = users_crud.get_user(db, user_id=user_id)
+    if db_user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    lobbies = users_crud.get_user_lobbies(db, user_id=user_id)
+    return lobbies

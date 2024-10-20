@@ -84,3 +84,12 @@ def get_users_by_queue_status(db: Session, active: bool) -> List[models.User]:
 
 def get_user_by_phone(db: Session, phone_number: str) -> Optional[models.User]:
     return db.query(models.User).filter(models.User.phone_number == phone_number).first()
+
+def get_user_lobbies(db: Session, user_id: str) -> List[models.Lobby]:
+    """
+    Retrieve all lobbies associated with a user.
+    """
+    user = db.query(models.User).filter(models.User.id == user_id).first()
+    if user:
+        return user.lobbies  # Assuming there's a relationship defined between User and Lobby
+    return []
